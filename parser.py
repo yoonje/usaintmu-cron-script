@@ -11,7 +11,6 @@ def json_file_to_dict(file_path):
 
 def major_parse(file_path, year, semester):
     '''
-
     :param file_path:
     :param year:
     :param semester:
@@ -25,12 +24,10 @@ def major_parse(file_path, year, semester):
     for college in college_list:
         department_list.append(list(major_dict[year][semester][college].keys()))
 
-    i=0
-    for temp_department in department_list:
+    for i, college_department in enumerate(department_list):
         college = college_list[i]
-        for department in temp_department:
+        for department in college_department:
             document_list.append(list(major_dict[year][semester][college][department].values()))
-        i+=1
 
     document_list = list(itertools.chain(*document_list))  # iterator.chain() : 3차원 리스트 -> 2차원 리스트
     document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
@@ -84,7 +81,7 @@ def selectives_parse(file_path, year, semester):
 
     document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
 
-    #document_list = list(set(document_list)) why not working? 겹치는 교선 과목들을 정리해줘야함
+    #document_list = list(set(document_list)) #why not working? <- 겹치는 교선 과목들을 정리해줘야함
 
     for document in document_list:
         document["년도"] = year
@@ -94,8 +91,7 @@ def selectives_parse(file_path, year, semester):
     return document_list
 
 
-major_documents = major_parse("./majors.json", "2019", "2 학기")
-essential_documents = essential_parse("./essentials.json", "2019", "2 학기")
+#major_documents = major_parse("./majors.json", "2019", "2 학기")
+#essential_documents = essential_parse("./essentials.json", "2019", "2 학기")
 selectives_documents = selectives_parse("./selectives.json", "2019", "2 학기")
-
-documents = major_documents + essential_documents + selectives_documents
+#documents = major_documents + essential_documents + selectives_documents
