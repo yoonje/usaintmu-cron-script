@@ -76,15 +76,13 @@ def selectives_parse(file_path, year, semester):
     :return 몽고DB에 저장할 Document 형태의 교선 리스트를 반환:
     '''
     selectives_dict = json_file_to_dict(file_path)
-    domain_list = list(selectives_dict[year][semester].keys())  # 구분 영역 리스트(전체,15이전...)
-    document_list = []  # 교선 교과목 리스트(딕셔너리 리스트)
+    domain_list = list(selectives_dict[year][semester].keys()) # 구분 영역 리스트(전체, 15이전, 16-18...)
+    document_list = [] # 교선 교과목 리스트(딕셔너리 리스트)
 
     for domain in domain_list:
         document_list.append(selectives_dict[year][semester][domain])
 
     document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
-
-    pprint(document_list)
 
     #document_list = list(set(document_list)) why not working? 겹치는 교선 과목들을 정리해줘야함
 
@@ -92,7 +90,6 @@ def selectives_parse(file_path, year, semester):
         document["년도"] = year
         document["학기"] = semester
         document["교과영역"] = document["교과영역"].split("\n")
-
 
     return document_list
 
