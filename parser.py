@@ -1,19 +1,18 @@
 import json
 import itertools
 import constants
-from pprint import *
+import pprint
 
 
 def json_file_to_dict(file_path):
     with open(file_path, "r") as f:
-        dict = json.load(f)
-    return dict
+        return json.load(f)
 
 
-def check_overlap_document(document_list):
-    for document in document_list:
+def check_overlap_document(documents):
+    for document in documents:
         count = 0
-        for check_document in document_list:
+        for check_document in documents:
             if document["과목번호"] == check_document["과목번호"]:
                 count += 1
         for i in range(2, constants.OVERLAP_MAX):
@@ -32,30 +31,19 @@ def major_parse(file_path, year, semester):
     :param semester:
     :return 몽고DB에 저장할 Document 형태의 전공 리스트를 반환:
     """
-    major_dict = json_file_to_dict(file_path)
-    college_list = list(major_dict[year][semester].keys())  # 학부 리스트
-    department_list = []  # 학과 리스트(2차원 리스트)
-    document_list = []  # 전공 교과목 리스트(딕셔너리 리스트)
+    parsed_data = json_file_to_dict(file_path)[year][semester]
+    ret = []
 
-    for college in college_list:
-        department_list.append(list(major_dict[year][semester][college].keys()))
+    for college in parsed_data.keys():
+        for faculty in parsed_data[college].keys():
+            for major in parsed_data[college][faculty].keys():
+                for document in parsed_data[college][faculty][major]:
+                    document.update({'year': year, 'semester': semester})
+                    ret.append(document)
 
-    for i, college_department in enumerate(department_list):
-        college = college_list[i]
-        for department in college_department:
-            document_list.append(list(major_dict[year][semester][college][department].values()))
+    # check_overlap_document(ret)  # 중복 과목 체크 코드
 
-    document_list = list(itertools.chain(*document_list))  # iterator.chain() : 3차원 리스트 -> 2차원 리스트
-    document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
-
-    # check_overlap_document(document_list)  # 중복 과목 체크 코드
-
-    # add to additional field about major
-    for document in document_list:
-        document["year"] = year
-        document["semester"] = semester
-
-    return document_list
+    return ret
 
 
 def essential_parse(file_path, year, semester):
@@ -65,24 +53,17 @@ def essential_parse(file_path, year, semester):
     :param semester:
     :return 몽고DB에 저장할 Document 형태의 교필 리스트를 반환:
     """
-    essential_dict = json_file_to_dict(file_path)
-    grade_list = list(essential_dict[year][semester].keys())  # 학년 리스트
-    document_list = []  # 교필 교과목 리스트(딕셔너리 리스트)
+    parsed_data = json_file_to_dict(file_path)[year][semester]
+    ret = []
 
-    for grade in grade_list:
-        document_list.append(essential_dict[year][semester][grade].values())
-
-    document_list = list(itertools.chain(*document_list))  # iterator.chain() : 3차원 리스트 -> 2차원 리스트
-    document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
+    for grade in parsed_data.keys():
+        for class_name in parsed_data[grade].keys():
+            for document in parsed_data[grade][class_name]:
+                document.update({'year': year, 'semester': semester})
+                ret.append(document)
 
     # check_overlap_document(document_list) #중복 과목 체크 코드
-
-    # add to additional field about essential
-    for document in document_list:
-        document["year"] = year
-        document["semester"] = semester
-
-    return document_list
+    return ret
 
 
 def selective_parse(file_path, year, semester):
@@ -92,26 +73,23 @@ def selective_parse(file_path, year, semester):
     :param semester:
     :return 몽고DB에 저장할 Document 형태의 교선 리스트를 반환:
     """
-    selectives_dict = json_file_to_dict(file_path)
-    domain_list = list(selectives_dict[year][semester].keys())  # 구분 영역 리스트(전체, 15이전, 16-18...)
-    document_list = []  # 교선 교과목 리스트(딕셔너리 리스트)
+    parsed_data = json_file_to_dict(file_path)[year][semester]
+    ret = []  # 교선 교과목 리스트(딕셔너리 리스트)
 
-    for domain in domain_list:
-        document_list.append(selectives_dict[year][semester][domain])
-
-    document_list = list(itertools.chain(*document_list))  # iterator.chain() : 2차원 리스트 -> 1차원 리스트
+    for domain in parsed_data:
+        for document in parsed_data[domain]:
+            document.update({'year': year, 'semester': semester})
+            ret.append(document)
 
     # check_overlap_document(document_list) #중복 과목 체크 코드
-
-    # add to additional field about selective
-    for document in document_list:
-        document["year"] = year
-        document["semester"] = semester
-        document["교과영역"] = document["교과영역"].split("\n")
-
-    return document_list
+    return ret
 
 
-major_documents = major_parse("./data/majors.json", "2019", "2 학기")
-essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
-selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
+if __name__ == "__main__":
+    major_documents = major_parse("./data/majors.json", "2019", "2 학기")
+    essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
+    selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
+
+    pprint(major_documents)
+    pprint(essential_documents)
+    pprint(selective_documents)
