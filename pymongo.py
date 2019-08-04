@@ -12,12 +12,11 @@ for major_document in ps.major_documents:
     pass
 
 # for essential_document in ps.essential_documents:
-#     pass
+#     collection.insert(essential_documents) # _id를 자동으로 생성해서 DB에 insert
 #
 #
 # # 교선은 교과영역에 따라서 중복이 생기므로 처리해줘야함(not insert)
 # for selective_document in ps.selectives_documents:
-#     pass
-
-
-# document_id = collection.insert(ps.documents)  # _id를 자동으로 생성해서 DB에 insert <- db 스키마 정의 필요
+#     collection.insert(selective_documents) # _id를 자동으로 생성해서 DB에 insert
+#
+#

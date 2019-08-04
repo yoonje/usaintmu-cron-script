@@ -22,15 +22,27 @@ def check_overlap_document(documents):
 
 
 def set_lecture_time(documents):
+    """
+    :param documents:
+    :return:
+    """
     for document in documents:
-        time_location_split = document["강의시간(강의실)"].split("\n")
+        time_location_split = document["강의시간(강의실)"].split(
+            "\n")  # ex) '수 19:00-19:50 (정보과학관 21305 이철희강의실-김익수)\n' '목 18:00-18:50 (정보과학관 21305 이철희강의실-김익수)\n'
         for time_location in time_location_split:
-            m = re.search(r"(?P<day>[월화수목금토 ]+) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.* [\da-zA-Z]+)-(\D+)\)", time_location) # 정규식에 문제가 있음
+            m = re.search(r"(?P<day>[월화수목금토 ]+) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.*)",
+                          time_location)
             if m is None:
-                document["time"] = "\xa0"
-            else:
-                document["time"] = m.group("day") + m.group("time")
-        pprint.pprint(document)
+                pass
+            elif "time" not in document.keys():  # 비어 있는 경우 초기화 이후 append
+                document["time"] = list()
+                document["time"].append(m.group("day") + " " + m.group("time"))  # ["수 19:00-19:50"]
+            else:  # 비어 있지 않은 경우 바로 append
+                document["time"].append(m.group("day") + " " + m.group("time"))  # ["수 19:00-19:50", "목 18:00-18:50"]
+
+            pprint.pprint(document)
+
+    return documents  # 시간 필드 생성하고 리턴
 
 
 def major_parse(file_path, year, semester):
@@ -51,6 +63,7 @@ def major_parse(file_path, year, semester):
                     document.update({'year': year, 'semester': semester})
                     ret.append(document)
 
+    ret = set_lecture_time(ret)
     # check_overlap_document(ret)  # 중복 과목 체크 코드
     return ret
 
@@ -71,7 +84,8 @@ def essential_parse(file_path, year, semester):
                 document.update({'year': year, 'semester': semester})
                 ret.append(document)
 
-    # check_overlap_document(document_list) #중복 과목 체크 코드
+    # ret = set_lecture_time(ret)
+    # check_overlap_document(document_list) # 중복 과목 체크 코드
     return ret
 
 
@@ -90,7 +104,8 @@ def selective_parse(file_path, year, semester):
             document.update({'year': year, 'semester': semester})
             ret.append(document)
 
-    # check_overlap_document(document_list) #중복 과목 체크 코드
+    # ret = set_lecture_time(ret)
+    # check_overlap_document(document_list) # 중복 과목 체크 코드
     return ret
 
 
@@ -99,7 +114,6 @@ if __name__ == "__main__":
     essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
     selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
 
-    set_lecture_time(major_documents)
     # pprint.pprint(major_documents)
     # pprint.pprint(essential_documents)
     # pprint.pprint(selective_documents)
