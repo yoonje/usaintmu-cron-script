@@ -2,6 +2,8 @@ import json
 import re
 import constants
 import pprint
+from datetime import datetime
+import time
 
 
 def json_file_to_dict(file_path):
@@ -21,6 +23,16 @@ def check_overlap_document(documents):
                 break
 
 
+def jsontime_to_timestamp(jsonday, jsontime):
+    date = "2019-07-" + str(constants.STR2STRINGNUMBER[jsonday])
+    start_time = date + " " + jsontime[0:2] + ":" + jsontime[3:5] + ":" + "00"
+    start_time_stamp = time.mktime(datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S").timetuple())
+    end_time = date + " " + jsontime[6:8] + ":" + jsontime[9:11] + ":" + "00"
+    end_time_stamp = time.mktime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S").timetuple())
+
+    return str(start_time_stamp) + "-" + str(end_time_stamp)
+
+
 def set_lecture_time(documents):
     """
     :param documents:
@@ -28,19 +40,21 @@ def set_lecture_time(documents):
     """
     for document in documents:
         time_location_split = document["강의시간(강의실)"].split(
-            "\n")  # ex) '수 19:00-19:50 (정보과학관 21305 이철희강의실-김익수)\n' '목 18:00-18:50 (정보과학관 21305 이철희강의실-김익수)\n'
+            "\n")  # '수 19:00-19:50 (정보과학관 21305 이철희강의실-김익수)\n' '목 18:00-18:50 (정보과학관 21305 이철희강의실-김익수)\n'
         for time_location in time_location_split:
-            m = re.search(r"(?P<day>[월화수목금토 ]+) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.*)",
-                          time_location)
+            m = re.search(r"(?P<days>[월화수목금토 ]*) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.*)", time_location)
             if m is None:
+                document["time"] = "\xa0"
                 pass
             elif "time" not in document.keys():  # 비어 있는 경우 초기화 이후 append
-                document["time"] = list()
-                document["time"].append(m.group("day") + " " + m.group("time"))  # ["수 19:00-19:50"]
+                document["time"] = set()
+                for day in m.group("days").split(" "):
+                    document["time"].add(jsontime_to_timestamp(day, m.group("time")))
             else:  # 비어 있지 않은 경우 바로 append
-                document["time"].append(m.group("day") + " " + m.group("time"))  # ["수 19:00-19:50", "목 18:00-18:50"]
+                for day in m.group("days").split(" "):
+                    document["time"].add(jsontime_to_timestamp(day, m.group("time")))
 
-            pprint.pprint(document)
+    pprint.pprint(documents)
 
     return documents  # 시간 필드 생성하고 리턴
 
