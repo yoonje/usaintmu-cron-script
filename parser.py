@@ -62,17 +62,17 @@ def set_lecture_time(documents):
                 for day in m.group("days").split(" "):
                     document["time"].add(jsontime_to_timestamp(day, m.group("time")))
 
-        if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 2:  # 일반적으로 같은 날에 연강이 있는 경우
+        if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 2:  # 같은 날에 연강이 있는 경우
             # TODO: 수업간의 간격이 15분 이내이면 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
+            #pprint.pprint(document)
             pass
         elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0] == time_location_split[2][0]) and len(m.group("days")) < 2 and len(document["time"]) == 3:  # 일반적으로 같은 날에 3연강이 있는 경우
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
+            #pprint.pprint(document)
             pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 4:
+        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 4:  # 같은 날에 연강이 있는 경우(2일)
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
+            #pprint.pprint(document)
             pass
         elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) == 3:  # for 건축
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
@@ -82,9 +82,9 @@ def set_lecture_time(documents):
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
             #pprint.pprint(document)
             pass
-        elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) > 3: # for 성정환 co_op
+        elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) > 3:  # for 성정환 co_op
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            pprint.pprint(document)
+            #pprint.pprint(document)
             pass
         else:
             #pprint.pprint(document)
