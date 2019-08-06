@@ -2,7 +2,7 @@ import json
 import re
 import constants
 import pprint
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import time
 
 global major_documents
@@ -28,8 +28,8 @@ def check_overlap_document(documents):
 
 def jsontime_to_timestamp(jsonday, jsontime):
     """
-    :param jsonday:
-    :param jsontime:
+    :param jsonday: 월 화 수 목 금 토
+    :param jsontime: 15:00-16:15
     :return :
     """
     date = "2019-07-" + constants.STR2STRINGNUMBER[jsonday]
@@ -38,16 +38,8 @@ def jsontime_to_timestamp(jsonday, jsontime):
     end_time = date + " " + jsontime[6:8] + ":" + jsontime[9:11] + ":" + "00"
     end_time_stamp = time.mktime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S").timetuple())
 
-    return str(start_time_stamp) + "-" + str(end_time_stamp)
-
-
-def check_connect_condition(time_location_split, days, time):
-    split_length = len(time_location_split)
-    days_length = len(days)
-    time_length = len(time)
-    print(time_location_split)
-    print(split_length, days_length, time_length)
-    return (split_length, days_length, time_length)
+    return [start_time_stamp, end_time_stamp]
+    # return str(start_time_stamp) + "-" + str(end_time_stamp)
 
 
 def set_lecture_time(documents):
@@ -57,82 +49,24 @@ def set_lecture_time(documents):
     """
     for document in documents:
         time_location_split = document["강의시간(강의실)"].split("\n")
+        _new_times = []
         for time_location in time_location_split:
             m = re.search(r"(?P<days>[월화수목금토 ]*) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.*)", time_location)
-            if m is None:
-                document["time"] = "\xa0"
-                pass
-            elif "time" not in document.keys():  # 비어 있는 경우 초기화 이후 append
-                document["time"] = set()
+            if m is not None:
                 for day in m.group("days").split(" "):
-                    document["time"].add(jsontime_to_timestamp(day, m.group("time")))
-            else:  # 비어 있지 않은 경우 바로 append
-                for day in m.group("days").split(" "):
-                    document["time"].add(jsontime_to_timestamp(day, m.group("time")))
+                    ts = jsontime_to_timestamp(day, m.group("time"))
+                    should_append = True
+                    for _new_time in _new_times:
+                        time_diff = abs(ts[0] - _new_time[1]) / 60
+                        if time_diff < 30:
+                            _new_time[1] = ts[1]
+                            should_append = False
+                        if ts[0] - _new_time[0] == 0 or ts[1] - _new_time[1] == 0:
+                            should_append = False
+                    if should_append:
+                        _new_times.append(ts)
 
-        """
-        경우의 수 정리
-        연강 1일(시나리오쓰기)
-        3연강 1일(수영2)
-        연강 2일(물리1및실험)
-        4연강 2일(통합설계)
-        4연강 4일(홍지만 Co-op)
-        2연강 4일(성정환 Co-op)
-        """
-
-
-
-        # if len(time_location_split) > 2 and time_location_split[0][0] == time_location_split[1][0]:
-        #     if check_connect_condition(time_location_split, m.group("days"), document["time"]) == (2,1,2):
-        #         pprint.pprint(document)
-        #         pass
-        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (3,1,3):
-        #         pass
-        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,1,4):
-        #         pass
-        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,3,2):
-        #         pass
-        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,3,2):
-        #         pprint.pprint(document)
-        #         pass
-        #     else:
-        #         pass
-
-        # if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) < 2 and len(document["time"]) == 2:  # 연강이 있는 날이 1일인 경우
-        #     # TODO: 수업간의 간격이 15분 이내이면 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     print(len(m.group("days")))
-        #     pass
-        # elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) < 2 and len(document["time"]) == 3:  # 3연강이 있는 경우
-        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     pass
-        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) < 2 and len(document["time"]) == 4:  # 연강이 있는 날이 2일인 경우
-        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     pass
-        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) == 3:  # for 건축학 통합설계
-        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     pass
-        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) > 3:  # for 홍지만 co_op
-        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     pass
-        # elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-        #         m.group("days")) > 3:  # for 성정환 co_op
-        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-        #     # pprint.pprint(document)
-        #     pass
-        # else:
-        #     pass
-
-    #pprint.pprint(documents)
+        document["time"] = _new_times
 
     return documents  # 시간 필드 생성하고 리턴
 
@@ -201,9 +135,58 @@ def selective_parse(file_path, year, semester):
     return ret
 
 
-major_documents = major_parse("./data/majors.json", "2019", "2 학기")
-essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
-selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
+test_data = [
+    {
+        "계획": " ",
+        "이수구분(주전공)": "전선-컴퓨터",
+        "이수구분(다전공)": "복선-컴퓨터",
+        "공학인증": " ",
+        "교과영역": " ",
+        "과목번호": "2150059401",
+        "과목명": "[심화]Co-op SAP 트랙(캡스톤디자인)",
+        "분반": " ",
+        "교수명": "홍지만\n장의진\n홍지만\n장의진",
+        "개설학과": "스파르탄 SW교육원",
+        "시간/학점(설계)": "6.00 /6.0",
+        "수강인원": "0",
+        "여석": "0",
+        "강의시간(강의실)": "월 화 수 목 18:30-19:45 (전산관 19328 - 첨단PC실습실-홍지만)\n월 화 수 목 18:30-19:45 (전산관 19328 - 첨단PC실습실-장의진)\n월 화 수 목 20:00-21:15 (전산관 19328 - 첨단PC실습실-홍지만)\n월 화 수 목 20:00-21:15 (전산관 19328 - 첨단PC실습실-장의진)",
+        "수강대상": "3학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어\n4학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어"
+    },
+    {
+        "계획": " ",
+        "이수구분(주전공)": "전선-컴퓨터",
+        "이수구분(다전공)": "복선-컴퓨터",
+        "공학인증": " ",
+        "교과영역": " ",
+        "과목번호": "2150059601",
+        "과목명": "[심화]Co-op실감형게임콘텐츠개발트랙(캡스톤디자인)",
+        "분반": " ",
+        "교수명": "성정환\n성정환",
+        "개설학과": "스파르탄 SW교육원",
+        "시간/학점(설계)": "6.00 /6.0",
+        "수강인원": "0",
+        "여석": "0",
+        "강의시간(강의실)": "월 화 수 목 12:00-13:15 (전산관 19328 - 첨단PC실습실-성정환)\n월 화 수 목 13:30-14:45 (전산관 19328 - 첨단PC실습실-성정환)",
+        "수강대상": "3학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어\n4학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어"
+    },
+]
+
+ret = set_lecture_time(test_data)
+KST = timezone(timedelta(hours=9))
+
+for r in ret:
+    print(r["과목명"])
+    _times = r["time"]
+    for _time in _times:
+        print("{} - {}".format(
+            datetime.fromtimestamp(_time[0], KST).strftime("%Y/%m/%d %H:%M"),
+            datetime.fromtimestamp(_time[1], KST).strftime("%Y/%m/%d %H:%M")
+        ))
+
+# major_documents = major_parse("./data/majors.json", "2019", "2 학기")
+# essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
+# selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
 
     # pprint.pprint(major_documents)
     # pprint.pprint(essential_documents)
