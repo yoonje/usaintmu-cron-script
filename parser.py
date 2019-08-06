@@ -38,8 +38,13 @@ def jsontime_to_timestamp(jsonday, jsontime):
     return str(start_time_stamp) + "-" + str(end_time_stamp)
 
 
-def check_overlap_time(time_location_split):
-    pass
+def check_overlap_time(time_location_split, days, time):
+    split_len = len(time_location_split)
+    ovelap_check = time_location_split[0][0] == time_location_split[1][0]
+    days_len = len(days)
+    time_len = len(time)
+    
+    return (split_len, ovelap_check, days_len, time_len)
 
 
 def set_lecture_time(documents):
@@ -62,35 +67,50 @@ def set_lecture_time(documents):
                 for day in m.group("days").split(" "):
                     document["time"].add(jsontime_to_timestamp(day, m.group("time")))
 
-        if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 2:  # 같은 날에 연강이 있는 경우
+        """
+        경우의 수 정리
+        연강 1일(시나리오쓰기)
+        3연강 1일(수영2)
+        연강 2일(물리1및실험)
+        4연강 2일(통합설계)
+        4연강 4일(홍지만 Co-op)
+        2연강 4일(성정환 Co-op)
+        """
+
+        if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) < 2 and len(document["time"]) == 2:  # 연강이 있는 날이 1일인 경우
             # TODO: 수업간의 간격이 15분 이내이면 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
-        elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0] == time_location_split[2][0]) and len(m.group("days")) < 2 and len(document["time"]) == 3:  # 일반적으로 같은 날에 3연강이 있는 경우
+        elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) < 2 and len(document["time"]) == 3:  # 3연강이 있는 경우
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) < 2 and len(document["time"]) == 4:  # 같은 날에 연강이 있는 경우(2일)
+        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) < 2 and len(document["time"]) == 4:  # 연강이 있는 날이 2일인 경우
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) == 3:  # for 건축
+        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) == 3:  # for 건축학 통합설계
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) > 3:  # for 홍지만 co_op
+        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) > 3:  # for 홍지만 co_op
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
-        elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(m.group("days")) > 3:  # for 성정환 co_op
+        elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+                m.group("days")) > 3:  # for 성정환 co_op
             # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            #pprint.pprint(document)
+            # pprint.pprint(document)
             pass
         else:
-            #pprint.pprint(document)
             pass
 
-    #pprint.pprint(documents)
+    # pprint.pprint(documents)
 
     return documents  # 시간 필드 생성하고 리턴
 
