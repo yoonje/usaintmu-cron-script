@@ -5,6 +5,9 @@ import pprint
 from datetime import datetime
 import time
 
+global major_documents
+global essential_documents
+global selective_documents
 
 def json_file_to_dict(file_path):
     with open(file_path, "r") as f:
@@ -38,13 +41,13 @@ def jsontime_to_timestamp(jsonday, jsontime):
     return str(start_time_stamp) + "-" + str(end_time_stamp)
 
 
-def check_overlap_time(time_location_split, days, time):
-    split_len = len(time_location_split)
-    ovelap_check = time_location_split[0][0] == time_location_split[1][0]
-    days_len = len(days)
-    time_len = len(time)
-    
-    return (split_len, ovelap_check, days_len, time_len)
+def check_connect_condition(time_location_split, days, time):
+    split_length = len(time_location_split)
+    days_length = len(days)
+    time_length = len(time)
+    print(time_location_split)
+    print(split_length, days_length, time_length)
+    return (split_length, days_length, time_length)
 
 
 def set_lecture_time(documents):
@@ -77,40 +80,59 @@ def set_lecture_time(documents):
         2연강 4일(성정환 Co-op)
         """
 
-        if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) < 2 and len(document["time"]) == 2:  # 연강이 있는 날이 1일인 경우
-            # TODO: 수업간의 간격이 15분 이내이면 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) < 2 and len(document["time"]) == 3:  # 3연강이 있는 경우
-            # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) < 2 and len(document["time"]) == 4:  # 연강이 있는 날이 2일인 경우
-            # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) == 3:  # for 건축학 통합설계
-            # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) > 3:  # for 홍지만 co_op
-            # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
-                m.group("days")) > 3:  # for 성정환 co_op
-            # TODO: 최소시간~최대시간으로 하나로 합쳐야함
-            # pprint.pprint(document)
-            pass
-        else:
-            pass
 
-    # pprint.pprint(documents)
+
+        # if len(time_location_split) > 2 and time_location_split[0][0] == time_location_split[1][0]:
+        #     if check_connect_condition(time_location_split, m.group("days"), document["time"]) == (2,1,2):
+        #         pprint.pprint(document)
+        #         pass
+        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (3,1,3):
+        #         pass
+        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,1,4):
+        #         pass
+        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,3,2):
+        #         pass
+        #     elif check_connect_condition(time_location_split, m.group("days"), document["time"]) == (4,3,2):
+        #         pprint.pprint(document)
+        #         pass
+        #     else:
+        #         pass
+
+        # if len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) < 2 and len(document["time"]) == 2:  # 연강이 있는 날이 1일인 경우
+        #     # TODO: 수업간의 간격이 15분 이내이면 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     print(len(m.group("days")))
+        #     pass
+        # elif len(time_location_split) == 3 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) < 2 and len(document["time"]) == 3:  # 3연강이 있는 경우
+        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     pass
+        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) < 2 and len(document["time"]) == 4:  # 연강이 있는 날이 2일인 경우
+        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     pass
+        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) == 3:  # for 건축학 통합설계
+        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     pass
+        # elif len(time_location_split) == 4 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) > 3:  # for 홍지만 co_op
+        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     pass
+        # elif len(time_location_split) == 2 and (time_location_split[0][0] == time_location_split[1][0]) and len(
+        #         m.group("days")) > 3:  # for 성정환 co_op
+        #     # TODO: 최소시간~최대시간으로 하나로 합쳐야함
+        #     # pprint.pprint(document)
+        #     pass
+        # else:
+        #     pass
+
+    #pprint.pprint(documents)
 
     return documents  # 시간 필드 생성하고 리턴
 
@@ -155,7 +177,7 @@ def essential_parse(file_path, year, semester):
                 ret.append(document)
 
     # ret = set_lecture_time(ret)
-    # check_overlap_document(document_list) # 중복 과목 체크 코드
+    check_overlap_document(ret) # 중복 과목 체크 코드
     return ret
 
 
@@ -179,10 +201,9 @@ def selective_parse(file_path, year, semester):
     return ret
 
 
-if __name__ == "__main__":
-    major_documents = major_parse("./data/majors.json", "2019", "2 학기")
-    essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
-    selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
+major_documents = major_parse("./data/majors.json", "2019", "2 학기")
+essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
+selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
 
     # pprint.pprint(major_documents)
     # pprint.pprint(essential_documents)
