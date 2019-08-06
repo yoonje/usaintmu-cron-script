@@ -8,3 +8,6 @@ pysaint.save_json("./data", "essentials.json", res)
 
 res = pysaint.get("교양선택", 2019, "2 학기", silent=True)
 pysaint.save_json("./data", "selectives.json", res)
+
+# res = pysaint.get("채플", 2019, "2 학기", silent=True)
+# pysaint.save_json("./data", "chapels.json", res)

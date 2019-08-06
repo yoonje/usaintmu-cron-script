@@ -9,6 +9,7 @@ global major_documents
 global essential_documents
 global selective_documents
 
+
 def json_file_to_dict(file_path):
     with open(file_path, "r") as f:
         return json.load(f)
@@ -42,7 +43,6 @@ def jsontime_to_timestamp(jsonday, jsontime):
         'start_time': start_time_stamp,
         'end_time': end_time_stamp,
     }
-    # return str(start_time_stamp) + "-" + str(end_time_stamp)
 
 
 def set_lecture_time(documents):
@@ -64,7 +64,8 @@ def set_lecture_time(documents):
                         if time_diff < 30:
                             _new_time['end_time'] = ts['end_time']
                             should_append = False
-                        if ts['start_time'] - _new_time['start_time'] == 0 or ts['end_time'] - _new_time['end_time'] == 0:
+                        if ts['start_time'] - _new_time['start_time'] == 0 or ts['end_time'] - _new_time[
+                            'end_time'] == 0:
                             should_append = False
                     if should_append:
                         _new_times.append(ts)
@@ -113,8 +114,8 @@ def essential_parse(file_path, year, semester):
                 document.update({'year': year, 'semester': semester})
                 ret.append(document)
 
-    # ret = set_lecture_time(ret)
-    check_overlap_document(ret) # 중복 과목 체크 코드
+    ret = set_lecture_time(ret)
+    # check_overlap_document(ret) # 중복 과목 체크 코드
     return ret
 
 
@@ -133,81 +134,13 @@ def selective_parse(file_path, year, semester):
             document.update({'year': year, 'semester': semester})
             ret.append(document)
 
-    # ret = set_lecture_time(ret)
+    ret = set_lecture_time(ret)
     # check_overlap_document(document_list) # 중복 과목 체크 코드
     return ret
 
 
-test_data = [
-    {
-        "계획": " ",
-        "이수구분(주전공)": "전선-컴퓨터",
-        "이수구분(다전공)": "복선-컴퓨터",
-        "공학인증": " ",
-        "교과영역": " ",
-        "과목번호": "2150059401",
-        "과목명": "[심화]Co-op SAP 트랙(캡스톤디자인)",
-        "분반": " ",
-        "교수명": "홍지만\n장의진\n홍지만\n장의진",
-        "개설학과": "스파르탄 SW교육원",
-        "시간/학점(설계)": "6.00 /6.0",
-        "수강인원": "0",
-        "여석": "0",
-        "강의시간(강의실)": "월 화 수 목 18:30-19:45 (전산관 19328 - 첨단PC실습실-홍지만)\n월 화 수 목 18:30-19:45 (전산관 19328 - 첨단PC실습실-장의진)\n월 화 수 목 20:00-21:15 (전산관 19328 - 첨단PC실습실-홍지만)\n월 화 수 목 20:00-21:15 (전산관 19328 - 첨단PC실습실-장의진)",
-        "수강대상": "3학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어\n4학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어"
-    },
-    {
-        "계획": " ",
-        "이수구분(주전공)": "전선-컴퓨터",
-        "이수구분(다전공)": "복선-컴퓨터",
-        "공학인증": " ",
-        "교과영역": " ",
-        "과목번호": "2150059601",
-        "과목명": "[심화]Co-op실감형게임콘텐츠개발트랙(캡스톤디자인)",
-        "분반": " ",
-        "교수명": "성정환\n성정환",
-        "개설학과": "스파르탄 SW교육원",
-        "시간/학점(설계)": "6.00 /6.0",
-        "수강인원": "0",
-        "여석": "0",
-        "강의시간(강의실)": "월 화 수 목 12:00-13:15 (전산관 19328 - 첨단PC실습실-성정환)\n월 화 수 목 13:30-14:45 (전산관 19328 - 첨단PC실습실-성정환)",
-        "수강대상": "3학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어\n4학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어"
-    },
-    {
-        "계획": " ",
-        "이수구분(주전공)": "전선-스포츠",
-        "이수구분(다전공)": " ",
-        "공학인증": " ",
-        "교과영역": " ",
-        "과목번호": "2150395701",
-        "과목명": "수영2",
-        "분반": " ",
-        "교수명": "이영준\n이영준\n이영준",
-        "개설학과": "스포츠학부",
-        "시간/학점(설계)": "3.00 /2.0",
-        "수강인원": "0",
-        "여석": "40",
-        "강의시간(강의실)": "월 15:00-15:50 (백마관 07117-이영준)\n월 16:00-16:50 (백마관 07117-이영준)\n월 14:00-14:50 (백마관 07117-이영준)",
-        "수강대상": "1학년 스포츠, 생활체육, 스포츠사이언스"
-    },
-]
+major_documents = major_parse("./data/majors.json", "2019", "2 학기")
+essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
+selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
 
-ret = set_lecture_time(test_data)
-# major_documents = major_parse("./data/majors.json", "2019", "2 학기")
-KST = timezone(timedelta(hours=9))
-
-for r in ret:
-    print(r["과목명"])
-    _times = r["time"]
-    for _time in _times:
-        print("{} - {}".format(
-            datetime.fromtimestamp(_time['start_time'], KST).strftime("%Y/%m/%d %H:%M"),
-            datetime.fromtimestamp(_time['end_time'], KST).strftime("%Y/%m/%d %H:%M")
-        ))
-
-# essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
-# selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
-
-    # pprint.pprint(major_documents)
-    # pprint.pprint(essential_documents)
-    # pprint.pprint(selective_documents)
+#pprint.pprint(major_documents)

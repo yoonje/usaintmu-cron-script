@@ -10,6 +10,7 @@ ipython==7.7.0
 ipython-genutils==0.2.0
 jedi==0.14.1
 lxml==4.1.1
+mongoengine==0.18.2
 parso==0.5.1
 pexpect==4.7.0
 pickleshare==0.7.5
