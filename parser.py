@@ -38,7 +38,10 @@ def jsontime_to_timestamp(jsonday, jsontime):
     end_time = date + " " + jsontime[6:8] + ":" + jsontime[9:11] + ":" + "00"
     end_time_stamp = time.mktime(datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S").timetuple())
 
-    return [start_time_stamp, end_time_stamp]
+    return {
+        'start_time': start_time_stamp,
+        'end_time': end_time_stamp,
+    }
     # return str(start_time_stamp) + "-" + str(end_time_stamp)
 
 
@@ -50,18 +53,18 @@ def set_lecture_time(documents):
     for document in documents:
         time_location_split = document["강의시간(강의실)"].split("\n")
         _new_times = []
-        for time_location in time_location_split:
+        for time_location in sorted(time_location_split):
             m = re.search(r"(?P<days>[월화수목금토 ]*) (?P<time>\d{2}:\d{2}-\d{2}:\d{2}) \((.*)", time_location)
             if m is not None:
                 for day in m.group("days").split(" "):
                     ts = jsontime_to_timestamp(day, m.group("time"))
                     should_append = True
                     for _new_time in _new_times:
-                        time_diff = abs(ts[0] - _new_time[1]) / 60
+                        time_diff = abs(ts['start_time'] - _new_time['end_time']) / 60
                         if time_diff < 30:
-                            _new_time[1] = ts[1]
+                            _new_time['end_time'] = ts['end_time']
                             should_append = False
-                        if ts[0] - _new_time[0] == 0 or ts[1] - _new_time[1] == 0:
+                        if ts['start_time'] - _new_time['start_time'] == 0 or ts['end_time'] - _new_time['end_time'] == 0:
                             should_append = False
                     if should_append:
                         _new_times.append(ts)
@@ -170,9 +173,27 @@ test_data = [
         "강의시간(강의실)": "월 화 수 목 12:00-13:15 (전산관 19328 - 첨단PC실습실-성정환)\n월 화 수 목 13:30-14:45 (전산관 19328 - 첨단PC실습실-성정환)",
         "수강대상": "3학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어\n4학년 컴퓨터 ,소프트 ,스마트시스템소프트 ,글로벌미디어"
     },
+    {
+        "계획": " ",
+        "이수구분(주전공)": "전선-스포츠",
+        "이수구분(다전공)": " ",
+        "공학인증": " ",
+        "교과영역": " ",
+        "과목번호": "2150395701",
+        "과목명": "수영2",
+        "분반": " ",
+        "교수명": "이영준\n이영준\n이영준",
+        "개설학과": "스포츠학부",
+        "시간/학점(설계)": "3.00 /2.0",
+        "수강인원": "0",
+        "여석": "40",
+        "강의시간(강의실)": "월 15:00-15:50 (백마관 07117-이영준)\n월 16:00-16:50 (백마관 07117-이영준)\n월 14:00-14:50 (백마관 07117-이영준)",
+        "수강대상": "1학년 스포츠, 생활체육, 스포츠사이언스"
+    },
 ]
 
 ret = set_lecture_time(test_data)
+# major_documents = major_parse("./data/majors.json", "2019", "2 학기")
 KST = timezone(timedelta(hours=9))
 
 for r in ret:
@@ -180,11 +201,10 @@ for r in ret:
     _times = r["time"]
     for _time in _times:
         print("{} - {}".format(
-            datetime.fromtimestamp(_time[0], KST).strftime("%Y/%m/%d %H:%M"),
-            datetime.fromtimestamp(_time[1], KST).strftime("%Y/%m/%d %H:%M")
+            datetime.fromtimestamp(_time['start_time'], KST).strftime("%Y/%m/%d %H:%M"),
+            datetime.fromtimestamp(_time['end_time'], KST).strftime("%Y/%m/%d %H:%M")
         ))
 
-# major_documents = major_parse("./data/majors.json", "2019", "2 학기")
 # essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
 # selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
 
