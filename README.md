@@ -6,6 +6,7 @@
 - MongoDB: 3.4.0
 - pymongo: 3.8.0
 - pysaint: 1.5.2
+- mongoengine 0.18.2
 ### Installation
 
 ```sh
