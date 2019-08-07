@@ -1,3 +1,5 @@
+from datetime import datetime, timezone, timedelta
+
 OVERLAP_MAX = 5
 
 STR2STRINGNUMBER = {
@@ -29,3 +31,5 @@ key_converter = {
     "이수구분(다전공)": "division_multiple",
     "이수구분(주전공)": "division_prime",
 }
+
+KST = timezone(timedelta(hours=9))

@@ -1,6 +1,7 @@
 from mongoengine import *
 import parser as ps
 import constants
+from datetime import datetime, timezone, timedelta
 
 connect('usaintmu_db')
 
@@ -12,7 +13,7 @@ class Time(EmbeddedDocument):
 
 class Lecture(Document):
     semester = StringField()
-    time = ListField(EmbeddedDocumentField(Time))
+    time = ListField(EmbeddedDocumentField('Time'))
     year = StringField()
     time_location = StringField()
     department = StringField()
@@ -41,59 +42,70 @@ def transform_db_key(documents):
     return ret
 
 
-def save_documnet(documents):
-    db_documents = transform_db_key(documents)
-    for document in db_documents:
-        lec = Lecture()
-        lec.semester = document["semester"]
-        lec.year = document["year"]
-        lec.time_location = document["time_location"]
-        lec.department = document["department"]
-        lec.plan = document["plan"]
-        lec.engineering_certification = document["engineering_certification"]
-        lec.subject_name = document["subject_name"]
-        lec.subject_code = document["subject_code"]
-        lec.subject_area = document["subject_area"]
-        lec.professor = document["professor"]
-        lec.division_class = document["division_class"]
-        lec.course_target = document["course_target"]
-        lec.number_of_student = document["number_of_student"]
-        lec.time_unit = document["time_unit"]
-        lec.remaining_seat = document["remaining_seat"]
-        lec.division_multiple = document["division_multiple"]
-        lec.division_prime = document["division_prime"]
+def save_documnet(document):
+    lec = Lecture()
+    lec.semester = document["semester"]
+    lec.year = document["year"]
+    lec.time_location = document["time_location"]
+    lec.department = document["department"]
+    lec.plan = document["plan"]
+    lec.engineering_certification = document["engineering_certification"]
+    lec.subject_name = document["subject_name"]
+    lec.subject_code = document["subject_code"]
+    lec.subject_area = document["subject_area"]
+    lec.professor = document["professor"]
+    lec.division_class = document["division_class"]
+    lec.course_target = document["course_target"]
+    lec.number_of_student = document["number_of_student"]
+    lec.time_unit = document["time_unit"]
+    lec.remaining_seat = document["remaining_seat"]
+    lec.division_multiple = document["division_multiple"]
+    lec.division_prime = document["division_prime"]
 
-        for i in range(0, len(document["time"])):
-            time = Time(start_time=document["time"][i]["start_time"], end_time=document["time"][i]["end_time"])
-            lec.time.append(time)
+    for i in range(0, len(document["time"])):
+        time = Time(start_time=datetime.fromtimestamp(document["time"][i]["start_time"], constants.KST),
+                    end_time=datetime.fromtimestamp(document["time"][i]["end_time"]))
+        lec.time.append(time)
 
-        return lec
+    return lec
 
 
 # 전공은 주전공 이수구분에 따라서 중복이 생기므로 처리 해줘야함(이수구분(주전공) plus and not insert)
 def save_major_document(documents):
-    lec = save_documnet(documents)
-    if Lecture.objects(subject_code=lec.subject_code):
-        temp_lec = Lecture.objects(subject_code=lec.subject_code)
-        temp_lec.division_prime.extend(document["division_prime"])
-        temp_lec.save()
-    else:
-        lec.save()
+    db_documents = transform_db_key(documents)
+
+    for _document in db_documents:
+        lec = save_documnet(_document)
+
+        if Lecture.objects(subject_code=lec.subject_code):
+            temp_lec = Lecture.objects.get(subject_code=lec.subject_code)
+            temp_lec.division_prime = temp_lec.division_prime.extend(_document["division_prime"])
+            temp_lec.save()
+        else:
+            lec.save()
 
 
 def save_essential_document(documents):
-    lec = save_documnet(documents)
-    lec.save()
+    db_documents = transform_db_key(documents)
+
+    for _document in db_documents:
+        lec = save_documnet(_document)
+        lec.save()
 
 
 # 교선은 교과영역에 따라서 중복이 생기므로 처리해줘야함(not insert)
 def save_selective_document(documents):
-    lec = save_documnet()
-    if Lecture.objects(subject_code=lec.subject_code):
-        pass
-    else:
-        lec.save()
+    db_documents = transform_db_key(documents)
+
+    for _document in db_documents:
+        lec = save_documnet(_document)
+        if Lecture.objects(subject_code=lec.subject_code):
+            pass
+        else:
+            lec.save()
 
 
 if __name__ == "__main__":
     save_major_document(ps.major_documents)
+    # save_essential_document(ps.essential_documents)
+    # save_selective_document(ps.selective_documents)

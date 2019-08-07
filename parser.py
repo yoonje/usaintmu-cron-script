@@ -5,10 +5,6 @@ import pprint
 from datetime import datetime, timezone, timedelta
 import time
 
-global major_documents
-global essential_documents
-global selective_documents
-
 
 def json_file_to_dict(file_path):
     with open(file_path, "r") as f:
