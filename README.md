@@ -1,5 +1,6 @@
+
 # Soongsil University Timetable Appliction Server
-숭실대 수강신청 정보를 전송을 통한 시간표 제작 앱의 장고 서버입니다. pysaint와 pymongo를 사용한 cron script을 통해서 수강신청 정보를 잦은 주기로 MongoDB에 저장하여 장고를 통해 최신의 정보를 사용자에게 전달합니다.
+숭실대 수강신청 정보를 전송을 위해 pysaint와 pymongo를 사용하여 cron script을 작성합니다. 수강신청 정보를 설정된 주기에 따라 MongoDB에 저장합니다. 이후 웹 애플리케이션을 통해 변경된 최신 수강 신청 정보를 사용자에게 전달할 수 있습니다.
 
 ### Version
 - Python: 3.6.8
@@ -7,21 +8,20 @@
 - pymongo: 3.8.0
 - pysaint: 1.5.2
 - mongoengine 0.18.2
-### Installation
 
+### Installation
 ```sh
 $ sudo pip install -r requirements.txt
 ```
 
 
-### To Run App
+### Run 
 ```sh
 $ ./manage.py runserver or python3 manage.py runserver
 ```
 
 ### MongoDB Document Shape
-
-JOSN 파일에 년도와 학기 그리고 시간에 해당하는 키와 값(리스트)을 추가했고 이수구분(주전공) 키들의 값을 리스트로 변경했습니다.
+JSON 파일에 년도와 학기 그리고 시간에 해당하는 키와 값(리스트)을 추가했고 이수구분(주전공) 키들의 값을 리스트로 변경했습니다.
 
 ex) 
 
@@ -140,8 +140,8 @@ MongoDB Update field operator\
 ```
 Database를 삭제한다.
 
-Reference: https://poiemaweb.com/mongdb-basics-shell-crud
-### MongDB Python(pymongo) API
+
+### Pymongo API
 
 ##### - create
 ```python
@@ -200,6 +200,10 @@ find() 함수를 통하면 한개 이상의 도큐먼트를 위한 쿼리를 요
 <컬렉션 참조 변수>.remove(<선택 기준 key-value>)
 ```
 선택 기준에 사용되는 key와 value에 대해서 delete한다.
-\
-\
-Reference: https://ngee.tistory.com/335 / https://ngee.tistory.com/336 / https://ngee.tistory.com/339 / https://ngee.tistory.com/340
+
+### Reference
+- https://poiemaweb.com/mongdb-basics-shell-crud
+- https://ngee.tistory.com/335
+- https://ngee.tistory.com/336
+- https://ngee.tistory.com/339
+- https://ngee.tistory.com/340
