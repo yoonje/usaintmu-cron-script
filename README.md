@@ -20,7 +20,7 @@ $ sudo pip install -r requirements.txt
 $ ./manage.py runserver or python3 manage.py runserver
 ```
 
-### MongoDB Document Shape
+### Document Shape
 JSON 파일에 년도와 학기 그리고 시간에 해당하는 키와 값(리스트)을 추가했고 이수구분(주전공) 키들의 값을 리스트로 변경했습니다.
 
 ex) 
