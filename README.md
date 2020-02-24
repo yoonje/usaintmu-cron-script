@@ -1,6 +1,6 @@
 
 # Soongsil University Timetable Appliction Server
-숭실대 수강신청 정보를 전송을 위해 pysaint와 pymongo를 사용하여 cron script을 작성합니다. 수강신청 정보를 설정된 주기에 따라 MongoDB에 저장합니다. 이후 웹 애플리케이션을 통해 변경된 최신 수강 신청 정보를 사용자에게 전달할 수 있습니다.
+숭실대 수강신청 정보를 전송을 위해 pysaint와 pymongo를 사용하여 cron script을 작성하고 수강신청 정보를 설정된 주기에 따라 MongoDB에 저장합니다. 이후 웹 애플리케이션을 통해 변경된 최신 수강 신청 정보를 사용자에게 전달할 수 있습니다.
 
 ### Version
 - Python: 3.6.8
@@ -51,6 +51,6 @@ document = {
 }
 ```
 
-### App Store
+### Store
 - https://play.google.com/store/apps/details?id=com.usaintmu&hl=ko
 - https://apps.apple.com/kr/app/%EC%9C%A0%EC%83%81%EB%AC%B4/id1476194177
