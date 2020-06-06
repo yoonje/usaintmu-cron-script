@@ -15,12 +15,14 @@ $ sudo pip install -r requirements.txt
 
 
 ### Run
+crawl.py 안에서 과목 구분, 연도, 학기를 선택할 수 있습니다.
 ```sh
 $ python3 crawl.py
 ```
 ```sh
 $ python3 parser.py
 ```
+`usaintmu_db`라고 MongoDB 컬렉션을 만들고 insert.py를 실행하세요.
 ```sh
 $ python3 insert.py
 ```
