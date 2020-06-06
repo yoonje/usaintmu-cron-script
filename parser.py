@@ -68,7 +68,7 @@ def set_lecture_time(documents):
 
         document["time"] = _new_times
 
-    return documents  # 시간 필드 생성하고 리턴
+    return documents
 
 
 def major_parse(file_path, year, semester):
@@ -123,7 +123,7 @@ def selective_parse(file_path, year, semester):
     :return 몽고DB에 저장할 Document 형태의 교선 리스트를 반환:
     """
     parsed_data = json_file_to_dict(file_path)[year][semester]
-    ret = []  # 교선 교과목 리스트(딕셔너리 리스트)
+    ret = [] 
 
     for domain in parsed_data:
         for document in parsed_data[domain]:
@@ -138,5 +138,3 @@ def selective_parse(file_path, year, semester):
 major_documents = major_parse("./data/majors.json", "2019", "2 학기")
 essential_documents = essential_parse("./data/essentials.json", "2019", "2 학기")
 selective_documents = selective_parse("./data/selectives.json", "2019", "2 학기")
-
-#pprint.pprint(major_documents)
