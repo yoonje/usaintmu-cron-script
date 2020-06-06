@@ -70,7 +70,6 @@ def save_documnet(document):
     return lec
 
 
-# 전공은 주전공 이수구분에 따라서 중복이 생기므로 처리 해줘야함(이수구분(주전공) plus and not insert)
 def save_major_document(documents):
     db_documents = transform_db_key(documents)
 
@@ -93,7 +92,6 @@ def save_essential_document(documents):
         lec.save()
 
 
-# 교선은 교과영역에 따라서 중복이 생기므로 처리해줘야함(not insert)
 def save_selective_document(documents):
     db_documents = transform_db_key(documents)
 
