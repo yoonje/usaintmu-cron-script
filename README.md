@@ -1,5 +1,5 @@
 # Usaintmu Cron Script
-숭실대 수강신청 정보의 전송을 위해 pysaint와 pymongo를 사용하여 cron script를 작성하고 설정된 주기에 따라 MongoDB에 저장합니다. 이후 웹 애플리케이션을 통해 변경된 최신 수강 신청 정보를 사용자에게 전달할 수 있습니다.
+숭실대 수강신청 정보의 전송을 위해 [pysaint](https://github.com/gomjellie/pysaint)와 pymongo를 사용하여 cron script를 작성하고 설정된 주기에 따라 MongoDB에 저장합니다. 이후 웹 애플리케이션을 통해 변경된 최신 수강 신청 정보를 사용자에게 전달할 수 있습니다.
 
 ### Version
 - Python: 3.6.8
@@ -14,10 +14,17 @@ $ sudo pip install -r requirements.txt
 ```
 
 
-### Run 
+### Run
 ```sh
-$ ./manage.py runserver or python3 manage.py runserver
+$ python3 crawl.py
 ```
+```sh
+$ python3 parser.py
+```
+```sh
+$ python3 insert.py
+```
+
 
 ### Document Schema
 JSON 파일에 년도와 학기 그리고 시간에 해당하는 키와 값(리스트)을 추가했고 이수구분(주전공) 키들의 값을 리스트로 변경했습니다.
