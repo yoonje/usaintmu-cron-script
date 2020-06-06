@@ -104,7 +104,6 @@ def save_selective_document(documents):
 
 
 if __name__ == "__main__":
-    # save_major_document(ps.major_documents)
-    # save_essential_document(ps.essential_documents)
-    # save_selective_document(ps.selective_documents)
-    pass
+    save_major_document(ps.major_documents)
+    save_essential_document(ps.essential_documents)
+    save_selective_document(ps.selective_documents)
