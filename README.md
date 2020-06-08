@@ -59,6 +59,6 @@ document = {
 }
 ```
 
-### Store
+### 유상무 Store
 - https://play.google.com/store/apps/details?id=com.usaintmu&hl=ko
 - https://apps.apple.com/kr/app/%EC%9C%A0%EC%83%81%EB%AC%B4/id1476194177
